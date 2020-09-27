@@ -1,0 +1,45 @@
+{
+  "name": "notify",
+  "version": "1.0.0",
+  "description": "Notify Microservices",
+  "main": "index.js",
+  "scripts": {
+    "start": "cross-env NOTIFY_WSP_DEFAULT_DESTINATION_PHONE=56987884978 NOTIFY_MONGODB_DB=capillary NOTIFY_MONGODB_USERNAME=LaKovraTim NOTIFY_MONGODB_PASSWORD=LaKovraTim node ./bin/www",
+    "start:dev": "cross-env NOTIFY_WSP_DEFAULT_DESTINATION_PHONE=56987884978 NOTIFY_MONGODB_DB=capillary NOTIFY_MONGODB_USERNAME=LaKovraTim NOTIFY_MONGODB_PASSWORD=LaKovraTim nodemon -L ./bin/www",
+    "eslint": "node_modules/.bin/eslint app.js ./app/**/*.js --quiet",
+    "swagger-schemas": "node swagger/schemas.js"
+  },
+  "pre-push": [
+    "eslint"
+  ],
+  "author": "LaKovraTim - Hackathon 2020",
+  "license": "ISC",
+  "dependencies": {
+    "body-parser": "^1.19.0",
+    "compression": "^1.7.4",
+    "cors": "^2.8.5",
+    "deepmerge": "^4.2.2",
+    "express": "^4.17.1",
+    "express-routemap": "^1.6.0",
+    "fs": "0.0.1-security",
+    "joi": "^17.2.1",
+    "lodash": "^4.17.20",
+    "moment-timezone": "^0.5.31",
+    "mongodb": "^3.6.2",
+    "swagger-ui-express": "^4.1.4"
+  },
+  "devDependencies": {
+    "cross-env": "^7.0.2",
+    "eslint": "^7.8.1",
+    "eslint-config-airbnb": "^18.2.0",
+    "eslint-config-airbnb-base": "^14.2.0",
+    "eslint-plugin-import": "^2.22.0",
+    "eslint-plugin-jsx-a11y": "^6.3.1",
+    "eslint-plugin-react": "^7.20.6",
+    "eslint-plugin-security": "^1.4.0",
+    "eslint-watch": "^7.0.0",
+    "joi-to-swagger": "^5.0.1",
+    "nodemon": "^2.0.4",
+    "pre-push": "^0.1.1"
+  }
+}

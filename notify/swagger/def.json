@@ -1,0 +1,181 @@
+{
+  "openapi": "3.0.1",
+  "info": {
+    "contact": {
+      "name": "LaKovraTim - Hackathon 2020"
+    },
+    "title": "notify",
+    "version": "1.0.0",
+    "description": "LaKovraTeam"
+  },
+  "servers": [
+    {
+      "url": "http://127.0.0.1:9002/notify/v1"
+    }
+  ],
+  "paths": {
+    "/notify/push/whatsapp": {
+      "post": {
+        "tags": [
+          "whatsapp"
+        ],
+        "summary": "Enviar mensaje del estado de la orden por whatsapp",
+        "requestBody": {
+          "description": "Object that needs to be send message",
+          "content": {
+            "application/form-data": {
+              "schema": {
+                "$ref": "#/components/schemas/whatsapp"
+              },
+              "examples": {
+                "ON_ROUTE": {
+                  "value": {
+                    "workOrderId": "5f6f63fce0efda615696a6c9",
+                    "type": "ON_ROUTE"
+                  }
+                },
+                "RETURN": {
+                  "value": {
+                    "workOrderId": "5f6f63fce0efda615696a6c9",
+                    "type": "RETURN"
+                  }
+                },
+                "DELIVERED": {
+                  "value": {
+                    "workOrderId": "5f6f63fce0efda615696a6c9",
+                    "type": "DELIVERED"
+                  }
+                },
+                "ON_RETRY": {
+                  "value": {
+                    "workOrderId": "5f6f63fce0efda615696a6c9",
+                    "type": "ON_RETRY"
+                  }
+                }
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Created"
+          },
+          "400": {
+            "description": "Bad request: Invalid body",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/error-response"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/internal-server-error-response"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "whatsapp": {
+        "type": "object",
+        "properties": {
+          "workOrderId": {
+            "type": "string"
+          },
+          "type": {
+            "type": "string",
+            "enum": [
+              "ON_ROUTE",
+              "RETURN",
+              "DELIVERED",
+              "ON_RETRY",
+              "CANCELLED"
+            ]
+          }
+        },
+        "required": [
+          "workOrderId",
+          "type"
+        ],
+        "additionalProperties": false
+      },
+      "error-response": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "type": "object",
+            "properties": {
+              "code": {
+                "type": "integer"
+              },
+              "error": {
+                "type": "string",
+                "enum": [
+                  "SCHEMA_NOT_FOUND",
+                  "SCHEMA_NOT_VALID",
+                  "WORK_ORDER_NOT_FOUND"
+                ]
+              },
+              "api": {
+                "type": "string",
+                "default": "NOTIFY"
+              },
+              "userMessage": {
+                "type": "string"
+              },
+              "techMessage": {
+                "type": "string"
+              }
+            }
+          },
+          "payload": {
+            "type": "string"
+          }
+        }
+      },
+      "internal-server-error-response": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "type": "object",
+            "properties": {
+              "code": {
+                "type": "integer"
+              },
+              "error": {
+                "type": "string",
+                "enum": [
+                  "INTERNAL_SERVER_ERROR"
+                ]
+              },
+              "api": {
+                "type": "string",
+                "default": "NOTIFY"
+              },
+              "userMessage": {
+                "type": "string"
+              },
+              "techMessage": {
+                "type": "string"
+              }
+            }
+          },
+          "payload": {
+            "type": "string"
+          }
+        }
+      }
+    }
+  }
+}

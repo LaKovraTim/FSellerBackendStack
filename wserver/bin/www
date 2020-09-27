@@ -1,0 +1,10 @@
+const express = require('express')
+const app = express()
+
+app.use('/static', express.static('public'));
+
+const port = 9001
+app.listen(port, () => {
+  console.log(`LaKovraTim Web Server listening at http://localhost:${port}`)
+  console.log(`Acces to static content in http://localhost:${port}/static/example.png`)
+})

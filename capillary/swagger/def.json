@@ -1,0 +1,385 @@
+{
+  "openapi": "3.0.1",
+  "info": {
+    "contact": {
+      "name": "LaKovraTim - Hackathon 2020"
+    },
+    "title": "capillary",
+    "version": "1.0.0",
+    "description": "LaKovraTeam"
+  },
+  "servers": [
+    {
+      "url": "http://127.0.0.1:9001/capillary/v1"
+    }
+  ],
+  "paths": {
+    "/sellers/{sellerId}/work-orders/{workOrderId}/retries": {
+      "post": {
+        "tags": [
+          "retries"
+        ],
+        "summary": "Reintentos de entrega",
+        "parameters": [
+          {
+            "name": "sellerId",
+            "in": "path",
+            "description": "ID of seller",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          },
+          {
+            "name": "workOrderId",
+            "in": "path",
+            "description": "ID of seller work order ",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "description": "Object that needs to be create retry",
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "$ref": "#/components/schemas/retry"
+              },
+              "examples": {
+                "RetrySuccess": {
+                  "value": {
+                    "comment": "Entregado con éxito",
+                    "location": {
+                      "lat": "0.784552",
+                      "lon": "0.986546"
+                    },
+                    "imagen": "picture of location",
+                    "success": true
+                  }
+                },
+                "RetryFail": {
+                  "value": {
+                    "comment": "Sin habitantes en casa",
+                    "location": {
+                      "lat": "0.122311",
+                      "lon": "0.121544"
+                    },
+                    "imagen": "picture of location",
+                    "success": false
+                  }
+                }
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Created"
+          },
+          "400": {
+            "description": "Bad request: Invalid body",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/error-response"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Seller or work order Not found"
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/internal-server-error-response"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/sellers/{sellerId}/work-orders/": {
+      "get": {
+        "tags": [
+          "workOrders"
+        ],
+        "summary": "Get Seller Work Order List",
+        "parameters": [
+          {
+            "name": "sellerId",
+            "in": "path",
+            "description": "ID of seller",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/work-order-response"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Seller or work order Not found"
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/internal-server-error-response"
+                }
+              }
+            }
+          }
+        }
+      },
+      "patch": {
+        "tags": [
+          "workOrders"
+        ],
+        "summary": "Modify Work Order Status to ON_ROUTE and notify customers",
+        "parameters": [
+          {
+            "name": "sellerId",
+            "in": "path",
+            "description": "ID of seller",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "requestBody": {
+          "description": "Object that needs to be",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/onroute"
+              },
+              "examples": {
+                "SuccessOnRoute": {
+                  "value": {
+                    "workOrderIds": [
+                      "qt6GO4F6O6",
+                      "6IGogxuFcI",
+                      "Edh6rsRyeb"
+                    ]
+                  }
+                },
+                "FailOnRoute": {
+                  "value": {
+                    "workOrderIds": []
+                  }
+                }
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "204": {
+            "description": "OK"
+          },
+          "404": {
+            "description": "Seller or work order Not found"
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/internal-server-error-response"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "onroute": {
+        "type": "object",
+        "properties": {
+          "workOrderIds": {
+            "type": "array",
+            "items": {},
+            "minItems": 1
+          }
+        },
+        "required": [
+          "workOrderIds"
+        ],
+        "additionalProperties": false
+      },
+      "retry": {
+        "type": "object",
+        "properties": {
+          "comment": {
+            "type": "string"
+          },
+          "latitud": {
+            "type": "number",
+            "format": "double"
+          },
+          "longitud": {
+            "type": "number",
+            "format": "double"
+          },
+          "success": {
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "comment",
+          "success"
+        ],
+        "additionalProperties": false
+      },
+      "work-order-response": {
+        "example": {
+          "id": "5f6f4231ec809f19b133625a",
+          "purchaseOrder": 224499,
+          "creationDate": "2020-09-22T12:59:00",
+          "deliveryDate": "2020-09-28T00:00:00",
+          "comment": "Favor dejar en conserjeria",
+          "status": "PENDIENTE",
+          "customer": {
+            "firstName": "Peter",
+            "secondName": "Pan",
+            "contact": {
+              "phone": "+56912456987",
+              "email": "lakovratim@yopmail.com"
+            },
+            "address": {
+              "street": "Av. nunca jamas",
+              "number": "1234",
+              "type": "CASA",
+              "city": "Santiago",
+              "comuna": "Pudahuel",
+              "region": "R.M",
+              "location": {
+                "lat": 0.44556,
+                "lon": 0.546546
+              },
+              "refers": "Frente al supermercado"
+            },
+            "receiver": {
+              "firstName": "Wendy",
+              "secondName": "Darling"
+            }
+          },
+          "retries": [
+            {
+              "comment": "No contesta, no atiende el timbre",
+              "image": "1601126995034.png",
+              "location": {
+                "lat": "0.0233232",
+                "lon": "0.2322"
+              },
+              "success": "false"
+            }
+          ],
+          "products": [
+            {
+              "sku": "YYRWW23",
+              "description": "Pantalón L"
+            },
+            {
+              "sku": "ZAPO74894",
+              "description": "Zapatos Negros"
+            }
+          ]
+        }
+      },
+      "error-response": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "type": "object",
+            "properties": {
+              "code": {
+                "type": "integer"
+              },
+              "error": {
+                "type": "string",
+                "enum": [
+                  "SCHEMA_NOT_FOUND",
+                  "SCHEMA_NOT_VALID",
+                  "WORK_ORDER_NOT_FOUND",
+                  "WORK_ORDER_IS_NOT_PENDING",
+                  "FILE_UPLOAD_NOT_FOUND",
+                  "WORK_ORDER_IS_NOT_ON_ROUTE"
+                ]
+              },
+              "api": {
+                "type": "string",
+                "default": "SELLERS"
+              },
+              "userMessage": {
+                "type": "string"
+              },
+              "techMessage": {
+                "type": "string"
+              }
+            }
+          },
+          "payload": {
+            "type": "string"
+          }
+        }
+      },
+      "internal-server-error-response": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "type": "object",
+            "properties": {
+              "code": {
+                "type": "integer"
+              },
+              "error": {
+                "type": "string",
+                "enum": [
+                  "INTERNAL_SERVER_ERROR"
+                ]
+              },
+              "api": {
+                "type": "string",
+                "default": "SELLERS"
+              },
+              "userMessage": {
+                "type": "string"
+              },
+              "techMessage": {
+                "type": "string"
+              }
+            }
+          },
+          "payload": {
+            "type": "string"
+          }
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,67 @@
+version: '3.7'
+services:
+  wserver:
+    build: 
+      context: ./wserver/.
+      dockerfile: ../stack-deploy/nodejs.dockerfile
+    ports:
+      - "9080:9001"
+    healthcheck:
+      test: curl -f http://127.0.0.1:9001/health || exit 1
+      interval: 30s
+      timeout: 5s
+      retries: 5
+    volumes:
+      - ./upload-files:/public
+      - ./wserver/:/usr/src/app
+  capillary:
+    build: 
+      context: ./capillary/.
+      dockerfile: ../stack-deploy/nodejs.dockerfile
+    ports:
+      - "9001:9001"
+    healthcheck:
+      test: curl -f http://127.0.0.1:9001/health || exit 1
+      interval: 30s
+      timeout: 5s
+      retries: 5
+    env_file:
+       - ./stack-deploy/env.vars
+    volumes:
+      - ./upload-files:/upload-files
+      - ./capillary/:/usr/src/app
+    depends_on:
+      - "mongo"
+  notify:
+    build: 
+      context: ./notify/.
+      dockerfile: ../stack-deploy/nodejs.dockerfile
+    ports:
+      - "9002:9001"
+    healthcheck:
+      test: curl -f http://127.0.0.1:9001/health || exit 1
+      interval: 30s
+      timeout: 5s
+      retries: 5
+    env_file:
+      - ./stack-deploy/env.vars
+    depends_on:
+      - "mongo"
+  mongo:
+    build: ./stack-deploy/mongo
+    ports:
+      - 27017:27017
+    volumes: 
+      - lakovratim_mongo_db_data:/data/db
+    healthcheck:
+      test: echo 'db.runCommand("ping").ok' | mongo localhost:27017 --quiet || exit 1
+      interval: 30s
+      timeout: 5s
+      retries: 5
+    env_file:
+       - ./stack-deploy/env.vars
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=root
+      - MONGO_INITDB_ROOT_PASSWORD=9SDqw3123
+volumes:
+    lakovratim_mongo_db_data: {}
